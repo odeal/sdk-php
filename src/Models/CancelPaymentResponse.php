@@ -21,9 +21,9 @@ class CancelPaymentResponse implements JsonSerializable
     public const VALIDATION_RULES = [
     ];
     /**
-     * @var object
+     * @var \Odeal\Sdk\Models\CancelPaymentResult
      */
-    public ?object $result = null;
+    public ?\Odeal\Sdk\Models\CancelPaymentResult $result = null;
 
     /**
      * @return mixed
