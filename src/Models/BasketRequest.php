@@ -63,11 +63,11 @@ class BasketRequest implements JsonSerializable
     /**
      * @var \Odeal\Sdk\Models\Item[]
      */
-    public array $items;
+    public array $items = [];
     /**
      * @var \Odeal\Sdk\Models\PaymentOption[]
      */
-    public array $paymentOptions;
+    public array $paymentOptions = [];
 
     /**
      * @return mixed

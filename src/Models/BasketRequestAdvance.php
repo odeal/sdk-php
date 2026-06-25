@@ -60,7 +60,7 @@ class BasketRequestAdvance implements JsonSerializable
     /**
      * @var \Odeal\Sdk\Models\PaymentOption[]
      */
-    public array $paymentOptions;
+    public array $paymentOptions = [];
 
     /**
      * @return mixed

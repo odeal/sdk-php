@@ -44,7 +44,7 @@ class ApiError implements JsonSerializable
     /**
      * @var \Odeal\Sdk\Models\ValidationError[]
      */
-    public ?array $validationErrors = null;
+    public ?array $validationErrors = [];
 
     /**
      * @return mixed

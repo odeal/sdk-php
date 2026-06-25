@@ -65,11 +65,11 @@ class BasketRequestFoodCard implements JsonSerializable
     /**
      * @var \Odeal\Sdk\Models\Item[]
      */
-    public array $items;
+    public array $items = [];
     /**
      * @var object[]
      */
-    public array $paymentOptions;
+    public array $paymentOptions = [];
 
     /**
      * @return mixed

@@ -21,9 +21,9 @@ class BasketListResponse implements JsonSerializable
     public const VALIDATION_RULES = [
     ];
     /**
-     * @var object
+     * @var \Odeal\Sdk\Models\BasketListResult
      */
-    public ?object $result = null;
+    public ?\Odeal\Sdk\Models\BasketListResult $result = null;
 
     /**
      * @return mixed
