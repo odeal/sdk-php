@@ -12,7 +12,7 @@ use ReflectionProperty;
 
 abstract class BaseResource
 {
-    private const AGENT = 'OdealSdkPhpClient/0.1.4';
+    private const AGENT = 'OdealSdkPhpClient/0.1.5';
     
         private ?OdealCircuitBreaker $circuitBreaker = null;
         
