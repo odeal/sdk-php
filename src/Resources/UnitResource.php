@@ -44,7 +44,6 @@ class UnitResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -57,15 +56,16 @@ class UnitResource extends BaseResource
             $headerParams['X-ODEAL-MERCHANT-KEY'] = $params['merchantKey'];
         }
 
-        $response = $this->send(
+        return $this->send(
             'Get',
             $path,
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            'list',
+            \Odeal\Sdk\Models\Unit::class
         );
-        return $this->deserialize($response, \Odeal\Sdk\Models\Unit::class, true);
     }
 
     /**
@@ -92,7 +92,6 @@ class UnitResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -111,9 +110,9 @@ class UnitResource extends BaseResource
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
-        )->then(function (string $response) {
-            return $this->deserialize($response, \Odeal\Sdk\Models\Unit::class, true);
-        });
+            $params['baseUrl'],
+            'list',
+            \Odeal\Sdk\Models\Unit::class
+        );
     }
 }

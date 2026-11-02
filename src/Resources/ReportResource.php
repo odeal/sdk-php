@@ -57,7 +57,6 @@ class ReportResource extends BaseResource
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
             'externalDeviceKey' => ['configProp' => 'externalDeviceKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -82,15 +81,16 @@ class ReportResource extends BaseResource
             $headerParams['X-ODEAL-MERCHANT-KEY'] = $params['merchantKey'];
         }
 
-        $response = $this->send(
+        return $this->send(
             'Get',
             $path,
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            'list',
+            \Odeal\Sdk\Models\TransactionReport::class
         );
-        return $this->deserialize($response, \Odeal\Sdk\Models\TransactionReport::class, true);
     }
 
     /**
@@ -130,7 +130,6 @@ class ReportResource extends BaseResource
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
             'externalDeviceKey' => ['configProp' => 'externalDeviceKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -161,9 +160,9 @@ class ReportResource extends BaseResource
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
-        )->then(function (string $response) {
-            return $this->deserialize($response, \Odeal\Sdk\Models\TransactionReport::class, true);
-        });
+            $params['baseUrl'],
+            'list',
+            \Odeal\Sdk\Models\TransactionReport::class
+        );
     }
 }

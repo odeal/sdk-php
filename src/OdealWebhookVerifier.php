@@ -5,101 +5,66 @@ declare(strict_types=1);
 namespace Odeal\Sdk;
 
 /**
- * Odeal Webhook İmza Doğrulama Sınıfı.
+ * Ödeal'in gönderdiği geri bildirim (webhook) isteklerini doğrulama yardımcıları.
+ *
+ * Ödeal, yapılandırmanızda tanımlıysa isteğe `X-ODEAL-REQUEST-KEY` başlığını (`odealRequestKey` değeri) koyar;
+ * Ödeal entegrasyon ekibiyle Basic Auth da tanımlanabilir (entegrasyon dokümanı, "Geri Bildirim"). Doğrulama
+ * isteğe bağlıdır: yapılandırmanıza uyan yöntemi kullanın. Karşılaştırmalar sabit zamanlıdır.
  *
  * Kullanım:
- *   $isValid = OdealWebhookVerifier::verifySignature(
- *       file_get_contents('php://input'),
- *       $_SERVER['HTTP_X_ODEAL_SIGNATURE'] ?? '',
- *       'your-webhook-secret'
- *   );
+ *   $requestKey = $_SERVER['HTTP_X_ODEAL_REQUEST_KEY'] ?? null;
+ *   if (!OdealWebhookVerifier::verifyRequestKey($requestKey, 'your-odeal-request-key')) {
+ *       http_response_code(401);
+ *       exit;
+ *   }
+ *   http_response_code(200); // 2xx ile hızlı yanıt verin, ağır işi sonra yapın
  */
-class OdealWebhookVerifier
+final class OdealWebhookVerifier
 {
-    public const SIGNATURE_HEADER = 'X-Odeal-Signature';
-    public const TIMESTAMP_HEADER = 'X-Odeal-Timestamp';
-    public const DEFAULT_TOLERANCE_SECONDS = 300; // 5 dakika
+    /** Ödeal'in istek anahtarını taşıyan başlık. */
+    public const REQUEST_KEY_HEADER = 'X-ODEAL-REQUEST-KEY';
+
+    /** Basic Auth bilgisini taşıyan başlık. */
+    public const AUTHORIZATION_HEADER = 'Authorization';
 
     /**
-     * Webhook imzasını doğrular.
+     * `X-ODEAL-REQUEST-KEY` başlığının değeri yapılandırmadaki `odealRequestKey` ile aynı mı.
+     * Başlık ya da beklenen anahtar boşsa false döner.
      */
-    public static function verifySignature(string $payload, string $signature, string $webhookSecret): bool
+    public static function verifyRequestKey(?string $receivedKey, ?string $expectedKey): bool
     {
-        if (empty($payload) || empty($signature) || empty($webhookSecret)) {
+        if ($receivedKey === null || $receivedKey === '' || $expectedKey === null || $expectedKey === '') {
             return false;
         }
-
-        $expected = self::computeSignature($payload, $webhookSecret);
-        return hash_equals($expected, $signature);
+        return self::fixedTimeEquals($receivedKey, $expectedKey);
     }
 
     /**
-     * Birden fazla secret ile doğrulama (secret rotation desteği).
-     * @param string[] $webhookSecrets
+     * `Authorization: Basic ...` başlığı verilen kullanıcı adı ve parolayla eşleşiyor mu.
+     * Başlık yoksa, Basic değilse, base64 geçersizse ya da beklenen bilgiler boşsa false döner.
      */
-    public static function verifySignatureMulti(string $payload, string $signature, array $webhookSecrets): bool
+    public static function verifyBasicAuth(?string $authorizationHeader, ?string $username, ?string $password): bool
     {
-        if (empty($payload) || empty($signature) || empty($webhookSecrets)) {
+        if ($authorizationHeader === null || $authorizationHeader === '' || $username === null || $username === ''
+            || $password === null || $password === '') {
             return false;
         }
-        foreach ($webhookSecrets as $secret) {
-            if (!empty($secret) && self::verifySignature($payload, $signature, $secret)) {
-                return true;
-            }
+        $value = trim($authorizationHeader);
+        $space = strpos($value, ' ');
+        if ($space === false || $space === 0
+            || strtr(substr($value, 0, $space), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') !== 'basic') {
+            return false;
         }
-        return false;
+        $received = base64_decode(trim(substr($value, $space + 1)), true);
+        if ($received === false) {
+            return false;
+        }
+        return self::fixedTimeEquals($received, $username . ':' . $password);
     }
 
-    /**
-     * Timestamp kontrolü ile doğrulama (replay attack koruması).
-     */
-    public static function verifySignatureWithTimestamp(
-        string $payload,
-        string $signature,
-        string $timestamp,
-        string $webhookSecret,
-        int $toleranceSeconds = self::DEFAULT_TOLERANCE_SECONDS
-    ): bool {
-        if (!is_numeric($timestamp)) {
-            return false;
-        }
-
-        $diff = abs(time() - (int) $timestamp);
-        if ($diff > $toleranceSeconds) {
-            return false;
-        }
-
-        $signedPayload = "{$timestamp}.{$payload}";
-        return self::verifySignature($signedPayload, $signature, $webhookSecret);
-    }
-
-    /**
-     * Birden fazla secret + timestamp doğrulama (rotation + replay koruması).
-     * @param string[] $webhookSecrets
-     */
-    public static function verifySignatureWithTimestampMulti(
-        string $payload,
-        string $signature,
-        string $timestamp,
-        array $webhookSecrets,
-        int $toleranceSeconds = self::DEFAULT_TOLERANCE_SECONDS
-    ): bool {
-        if (!is_numeric($timestamp)) {
-            return false;
-        }
-        $diff = abs(time() - (int) $timestamp);
-        if ($diff > $toleranceSeconds) {
-            return false;
-        }
-        $signedPayload = "{$timestamp}.{$payload}";
-        return self::verifySignatureMulti($signedPayload, $signature, $webhookSecrets);
-    }
-
-    /**
-     * HMAC-SHA256 imza hesaplar.
-     */
-    public static function computeSignature(string $payload, string $secret): string
+    /** Uzunluk farkı da sızmasın diye iki değerin SHA-256 özeti sabit zamanlı karşılaştırılır. */
+    private static function fixedTimeEquals(string $a, string $b): bool
     {
-        return hash_hmac('sha256', $payload, $secret);
+        return hash_equals(hash('sha256', $b, true), hash('sha256', $a, true));
     }
 }

@@ -27,15 +27,16 @@ class OdealHealthCheck
     public function ping(): HealthCheckResult
     {
         $start = microtime(true);
+        // Kimlik doğrulaması istemeyen GET /healthcheck; anahtar gönderilmez. Adres yapılandırmanın etkin adresi (§12).
+        $baseUrl = $this->config->getEffectiveBaseUrl();
         try {
-            $ch = curl_init($this->config->getBaseUrl() . '/health');
+            $ch = curl_init($baseUrl . '/healthcheck');
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_TIMEOUT => 10,
                 CURLOPT_CONNECTTIMEOUT => 10,
-                CURLOPT_HTTPHEADER => [
-                    'X-ODEAL-SECRET-KEY: ' . $this->config->getSecretKey(),
-                ],
+                // Yönlendirme izlenmez; 3xx sağlıksız sayılır.
+                CURLOPT_FOLLOWLOCATION => false,
             ]);
 
             curl_exec($ch);
@@ -46,18 +47,18 @@ class OdealHealthCheck
             $latencyMs = (int) ((microtime(true) - $start) * 1000);
 
             if (!empty($error)) {
-                return new HealthCheckResult(false, 0, $latencyMs, $this->config->getBaseUrl(), $error);
+                return new HealthCheckResult(false, 0, $latencyMs, $baseUrl, $error);
             }
 
             return new HealthCheckResult(
                 $statusCode >= 200 && $statusCode < 300,
                 $statusCode,
                 $latencyMs,
-                $this->config->getBaseUrl()
+                $baseUrl
             );
         } catch (\Throwable $e) {
             $latencyMs = (int) ((microtime(true) - $start) * 1000);
-            return new HealthCheckResult(false, 0, $latencyMs, $this->config->getBaseUrl(), $e->getMessage());
+            return new HealthCheckResult(false, 0, $latencyMs, $baseUrl, $e->getMessage());
         }
     }
 }

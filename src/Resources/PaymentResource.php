@@ -27,14 +27,14 @@ class PaymentResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\CancelPaymentResponse
+     * @return \Odeal\Sdk\Models\CancelPaymentResponse|null
      */
     public function cancelPayment(
         \Odeal\Sdk\Models\CancelPaymentRequest $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\CancelPaymentResponse {
+    ): ?\Odeal\Sdk\Models\CancelPaymentResponse {
         $path = '/payment/cancel';
 
         $params = [
@@ -46,7 +46,6 @@ class PaymentResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -59,15 +58,16 @@ class PaymentResource extends BaseResource
             $headerParams['X-ODEAL-MERCHANT-KEY'] = $params['merchantKey'];
         }
 
-        $response = $this->send(
+        return $this->send(
             'Put',
             $path,
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\CancelPaymentResponse::class
         );
-        return $this->deserialize($response, \Odeal\Sdk\Models\CancelPaymentResponse::class);
     }
 
     /**
@@ -77,7 +77,7 @@ class PaymentResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\CancelPaymentResponse döner.
+     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\CancelPaymentResponse ya da null (boş yanıt) döner.
      */
     public function cancelPaymentAsync(
         \Odeal\Sdk\Models\CancelPaymentRequest $request,
@@ -96,7 +96,6 @@ class PaymentResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -115,9 +114,9 @@ class PaymentResource extends BaseResource
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
-        )->then(function (string $response) {
-            return $this->deserialize($response, \Odeal\Sdk\Models\CancelPaymentResponse::class);
-        });
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\CancelPaymentResponse::class
+        );
     }
 }

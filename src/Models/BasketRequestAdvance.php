@@ -79,6 +79,8 @@ class BasketRequestAdvance implements JsonSerializable
 
         // Null değerleri temizle
         $cleanData = array_filter($data, fn($val) => $val !== null);
-        return $cleanData;
+
+        // Boş model JSON'da {} olarak yazılır; boş PHP dizisi [] olurdu (sözleşme §16).
+        return $cleanData === [] ? new \stdClass() : $cleanData;
     }
 }

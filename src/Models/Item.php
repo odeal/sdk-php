@@ -13,6 +13,7 @@ use Odeal\Sdk\OdealClientDefault;
 class Item implements JsonSerializable
 {
     public const ARRAY_TYPES = [
+        'allowances' => 'Odeal\Sdk\Models\Allowance',
     ];
 
     public const ENUM_TYPES = [
@@ -32,6 +33,10 @@ class Item implements JsonSerializable
      * @var \Odeal\Sdk\Models\Product
      */
     public \Odeal\Sdk\Models\Product $product;
+    /**
+     * @var \Odeal\Sdk\Models\Allowance[]
+     */
+    public ?array $allowances = [];
 
     /**
      * @return mixed
@@ -41,10 +46,13 @@ class Item implements JsonSerializable
         $data = [
             'quantity' => $this->quantity,
             'product' => $this->product,
+            'allowances' => $this->allowances,
         ];
 
         // Null değerleri temizle
         $cleanData = array_filter($data, fn($val) => $val !== null);
-        return $cleanData;
+
+        // Boş model JSON'da {} olarak yazılır; boş PHP dizisi [] olurdu (sözleşme §16).
+        return $cleanData === [] ? new \stdClass() : $cleanData;
     }
 }

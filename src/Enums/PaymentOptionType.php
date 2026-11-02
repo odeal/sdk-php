@@ -29,6 +29,10 @@ enum PaymentOptionType: string
      * API Değeri: FOOD_CARD
      */
     case FOODCARD = 'FOOD_CARD';
+    /**
+     * API Değeri: MONEY_TRANSFER
+     */
+    case MONEYTRANSFER = 'MONEY_TRANSFER';
 
     /**
      * Tüm değerleri array olarak döner.

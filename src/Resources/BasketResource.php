@@ -27,14 +27,14 @@ class BasketResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketResponse
+     * @return \Odeal\Sdk\Models\BasketResponse|null
      */
     public function createSimpleBasket(
         \Odeal\Sdk\Models\BasketRequest $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketResponse {
+    ): ?\Odeal\Sdk\Models\BasketResponse {
         $path = '/basket';
 
         $params = [
@@ -46,7 +46,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -59,15 +58,16 @@ class BasketResource extends BaseResource
             $headerParams['X-ODEAL-MERCHANT-KEY'] = $params['merchantKey'];
         }
 
-        $response = $this->send(
+        return $this->send(
             'Post',
             $path,
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketResponse::class
         );
-        return $this->deserialize($response, \Odeal\Sdk\Models\BasketResponse::class);
     }
 
     /**
@@ -77,7 +77,7 @@ class BasketResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketResponse döner.
+     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketResponse ya da null (boş yanıt) döner.
      */
     public function createSimpleBasketAsync(
         \Odeal\Sdk\Models\BasketRequest $request,
@@ -96,7 +96,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -115,10 +114,10 @@ class BasketResource extends BaseResource
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
-        )->then(function (string $response) {
-            return $this->deserialize($response, \Odeal\Sdk\Models\BasketResponse::class);
-        });
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketResponse::class
+        );
     }
 
     /**
@@ -128,14 +127,14 @@ class BasketResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketResponse
+     * @return \Odeal\Sdk\Models\BasketResponse|null
      */
     public function createAdvanceBasket(
         \Odeal\Sdk\Models\BasketRequestAdvance $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketResponse {
+    ): ?\Odeal\Sdk\Models\BasketResponse {
         $path = '/basket/advance';
 
         $params = [
@@ -147,7 +146,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -160,15 +158,16 @@ class BasketResource extends BaseResource
             $headerParams['X-ODEAL-MERCHANT-KEY'] = $params['merchantKey'];
         }
 
-        $response = $this->send(
+        return $this->send(
             'Post',
             $path,
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketResponse::class
         );
-        return $this->deserialize($response, \Odeal\Sdk\Models\BasketResponse::class);
     }
 
     /**
@@ -178,7 +177,7 @@ class BasketResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketResponse döner.
+     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketResponse ya da null (boş yanıt) döner.
      */
     public function createAdvanceBasketAsync(
         \Odeal\Sdk\Models\BasketRequestAdvance $request,
@@ -197,7 +196,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -216,10 +214,10 @@ class BasketResource extends BaseResource
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
-        )->then(function (string $response) {
-            return $this->deserialize($response, \Odeal\Sdk\Models\BasketResponse::class);
-        });
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketResponse::class
+        );
     }
 
     /**
@@ -229,14 +227,14 @@ class BasketResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketResponse
+     * @return \Odeal\Sdk\Models\BasketResponse|null
      */
     public function createCurrentAccountBasket(
         \Odeal\Sdk\Models\BasketRequestCurrentAccount $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketResponse {
+    ): ?\Odeal\Sdk\Models\BasketResponse {
         $path = '/basket/current-account';
 
         $params = [
@@ -248,7 +246,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -261,15 +258,16 @@ class BasketResource extends BaseResource
             $headerParams['X-ODEAL-MERCHANT-KEY'] = $params['merchantKey'];
         }
 
-        $response = $this->send(
+        return $this->send(
             'Post',
             $path,
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketResponse::class
         );
-        return $this->deserialize($response, \Odeal\Sdk\Models\BasketResponse::class);
     }
 
     /**
@@ -279,7 +277,7 @@ class BasketResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketResponse döner.
+     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketResponse ya da null (boş yanıt) döner.
      */
     public function createCurrentAccountBasketAsync(
         \Odeal\Sdk\Models\BasketRequestCurrentAccount $request,
@@ -298,7 +296,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -317,10 +314,10 @@ class BasketResource extends BaseResource
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
-        )->then(function (string $response) {
-            return $this->deserialize($response, \Odeal\Sdk\Models\BasketResponse::class);
-        });
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketResponse::class
+        );
     }
 
     /**
@@ -330,14 +327,14 @@ class BasketResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketResponse
+     * @return \Odeal\Sdk\Models\BasketResponse|null
      */
     public function createFoodCardBasket(
         \Odeal\Sdk\Models\BasketRequestFoodCard $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketResponse {
+    ): ?\Odeal\Sdk\Models\BasketResponse {
         $path = '/basket/foodCard';
 
         $params = [
@@ -349,7 +346,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -362,15 +358,16 @@ class BasketResource extends BaseResource
             $headerParams['X-ODEAL-MERCHANT-KEY'] = $params['merchantKey'];
         }
 
-        $response = $this->send(
+        return $this->send(
             'Post',
             $path,
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketResponse::class
         );
-        return $this->deserialize($response, \Odeal\Sdk\Models\BasketResponse::class);
     }
 
     /**
@@ -380,7 +377,7 @@ class BasketResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketResponse döner.
+     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketResponse ya da null (boş yanıt) döner.
      */
     public function createFoodCardBasketAsync(
         \Odeal\Sdk\Models\BasketRequestFoodCard $request,
@@ -399,7 +396,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -418,10 +414,10 @@ class BasketResource extends BaseResource
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
-        )->then(function (string $response) {
-            return $this->deserialize($response, \Odeal\Sdk\Models\BasketResponse::class);
-        });
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketResponse::class
+        );
     }
 
     /**
@@ -431,14 +427,14 @@ class BasketResource extends BaseResource
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $externalDeviceKey 
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketListResponse
+     * @return \Odeal\Sdk\Models\BasketListResponse|null
      */
     public function listBaskets(
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $externalDeviceKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketListResponse {
+    ): ?\Odeal\Sdk\Models\BasketListResponse {
         $path = '/basket/list';
 
         $params = [
@@ -452,7 +448,6 @@ class BasketResource extends BaseResource
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
             'externalDeviceKey' => ['configProp' => 'externalDeviceKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -468,15 +463,16 @@ class BasketResource extends BaseResource
             $headerParams['externalDeviceKey'] = $params['externalDeviceKey'];
         }
 
-        $response = $this->send(
+        return $this->send(
             'Get',
             $path,
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketListResponse::class
         );
-        return $this->deserialize($response, \Odeal\Sdk\Models\BasketListResponse::class);
     }
 
     /**
@@ -486,7 +482,7 @@ class BasketResource extends BaseResource
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $externalDeviceKey 
      * @param string $baseUrl API sunucusunun adresi.
-     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketListResponse döner.
+     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\BasketListResponse ya da null (boş yanıt) döner.
      */
     public function listBasketsAsync(
         ?string $secretKey = null,
@@ -507,7 +503,6 @@ class BasketResource extends BaseResource
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
             'externalDeviceKey' => ['configProp' => 'externalDeviceKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -529,10 +524,10 @@ class BasketResource extends BaseResource
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
-        )->then(function (string $response) {
-            return $this->deserialize($response, \Odeal\Sdk\Models\BasketListResponse::class);
-        });
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\BasketListResponse::class
+        );
     }
 
     /**
@@ -562,7 +557,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -584,7 +578,8 @@ class BasketResource extends BaseResource
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            null
         );
     }
 
@@ -615,7 +610,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -637,7 +631,8 @@ class BasketResource extends BaseResource
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            null
         );
     }
 
@@ -665,7 +660,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -684,7 +678,8 @@ class BasketResource extends BaseResource
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            null
         );
     }
 
@@ -712,7 +707,6 @@ class BasketResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -731,7 +725,8 @@ class BasketResource extends BaseResource
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            null
         );
     }
 }

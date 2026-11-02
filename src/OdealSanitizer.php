@@ -18,7 +18,11 @@ class OdealSanitizer
         'tckn', 'tcKimlikNo', 'tcKimlik', 'identityNumber', 'nationalId',
         'iban', 'phone', 'phoneNumber', 'telephone', 'gsm',
         'email', 'eMail', 'mail', 'address', 'adres',
+        'gsmNumber', 'basicAuthPassword', 'odealRequestKey', 'merchantKey', 'externalDeviceKey', 'taxNumber', 'apiKey',
     ];
+
+    /** Adında bu parçalardan biri geçen her alan da maskelenir (büyük/küçük harf duyarsız; ör. basicAuthPassword). */
+    private const SENSITIVE_FIELD_PARTS = ['password', 'secret', 'token'];
 
     private const SENSITIVE_HEADER_KEYWORDS = ['secret', 'key', 'authorization', 'token', 'cookie', 'session'];
 
@@ -52,22 +56,44 @@ class OdealSanitizer
      */
     private static function maskValue(mixed $value): mixed
     {
-        static $sensitive = null;
-        if ($sensitive === null) {
-            $sensitive = array_flip(array_map('strtolower', self::SENSITIVE_FIELDS));
-        }
-
         if (!is_array($value)) {
             return $value;
         }
 
         $out = [];
         foreach ($value as $key => $item) {
-            $out[$key] = (is_string($key) && isset($sensitive[strtolower($key)]))
+            $out[$key] = (is_string($key) && self::isSensitiveField($key))
                 ? '***'
                 : self::maskValue($item);
         }
         return $out;
+    }
+
+    /**
+     * Alan adı hassas mı: listede varsa ya da adında password/secret/token geçiyorsa.
+     */
+    private static function isSensitiveField(string $name): bool
+    {
+        static $sensitive = null;
+        if ($sensitive === null) {
+            $sensitive = array_flip(array_map([self::class, 'asciiLower'], self::SENSITIVE_FIELDS));
+        }
+        $lower = self::asciiLower($name);
+        if (isset($sensitive[$lower])) {
+            return true;
+        }
+        foreach (self::SENSITIVE_FIELD_PARTS as $part) {
+            if (str_contains($lower, $part)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** strtolower PHP 8.2 öncesinde yerele bağlı (Türkçe yerelde "I" farklı küçülebilir); yalnız ASCII çevrilir. */
+    private static function asciiLower(string $s): string
+    {
+        return strtr($s, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
     }
 
     /**
@@ -80,7 +106,8 @@ class OdealSanitizer
             $pattern = '/("' . preg_quote($field, '/') . '"\s*:\s*")[^"]*(")/i';
             $result = preg_replace($pattern, '${1}***${2}', $result);
         }
-        return $result;
+        // Adında password/secret/token geçen alanlar (ör. "basicAuthPassword").
+        return preg_replace('/("[^"]*(?:password|secret|token)[^"]*"\s*:\s*")[^"]*(")/i', '${1}***${2}', $result);
     }
 
     /**
@@ -94,7 +121,7 @@ class OdealSanitizer
 
         $sanitized = [];
         foreach ($headers as $key => $value) {
-            $lower = strtolower($key);
+            $lower = self::asciiLower($key);
             $isSensitive = false;
             foreach (self::SENSITIVE_HEADER_KEYWORDS as $keyword) {
                 if (str_contains($lower, $keyword)) {

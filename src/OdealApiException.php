@@ -28,6 +28,12 @@ class OdealApiException extends OdealException
     public function getResponseBody(): ?string { return $this->responseBody; }
 }
 
+/**
+ * Yönlendirme hatası. SDK yönlendirme izlemez; 3xx yanıtı bu hataya dönüşür ve istek tekrar gönderilmez.
+ * getStatusCode() sunucunun döndürdüğü 3xx kodudur.
+ */
+class OdealRedirectException extends OdealApiException {}
+
 /** Kimlik doğrulama hatası (401). */
 class OdealAuthenticationException extends OdealApiException
 {

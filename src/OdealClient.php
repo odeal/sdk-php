@@ -21,6 +21,7 @@ class OdealClient
     private Resources\ConfigurationResource $_configuration;
     private Resources\UnitResource $_unit;
     private Resources\ReportResource $_report;
+    private Resources\ProfileResource $_profile;
 
     /**
      * @param OdealConfig $config SDK yapilandirma ayarlari.
@@ -30,7 +31,7 @@ class OdealClient
     {
         $this->config = $config;
         $this->httpClient = $httpClient ?? new GuzzleClient([
-            'base_uri' => $config->baseUrl,
+            'base_uri' => $config->getEffectiveBaseUrl(),
             'timeout'  => 30.0,
         ]);
         $this->_basket = new Resources\BasketResource($this->httpClient, $config);
@@ -38,6 +39,7 @@ class OdealClient
         $this->_configuration = new Resources\ConfigurationResource($this->httpClient, $config);
         $this->_unit = new Resources\UnitResource($this->httpClient, $config);
         $this->_report = new Resources\ReportResource($this->httpClient, $config);
+        $this->_profile = new Resources\ProfileResource($this->httpClient, $config);
     }
 
     /**
@@ -98,6 +100,15 @@ class OdealClient
         return $this->_report;
     }
 
+    /**
+     * Profile API islemlerine dogrudan erisim.
+     * @return Resources\ProfileResource
+     */
+    public function profile(): Resources\ProfileResource
+    {
+        return $this->_profile;
+    }
+
     // ══════════════════════════════════════════════════════════════════════════
     // FACADE METHODS
     // ══════════════════════════════════════════════════════════════════════════
@@ -109,14 +120,14 @@ class OdealClient
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketResponse
+     * @return \Odeal\Sdk\Models\BasketResponse|null
      */
     public function createSimpleBasket(
         \Odeal\Sdk\Models\BasketRequest $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketResponse {
+    ): ?\Odeal\Sdk\Models\BasketResponse {
         return $this->_basket->createSimpleBasket(
             $request,
             $secretKey,
@@ -132,14 +143,14 @@ class OdealClient
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketResponse
+     * @return \Odeal\Sdk\Models\BasketResponse|null
      */
     public function createAdvanceBasket(
         \Odeal\Sdk\Models\BasketRequestAdvance $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketResponse {
+    ): ?\Odeal\Sdk\Models\BasketResponse {
         return $this->_basket->createAdvanceBasket(
             $request,
             $secretKey,
@@ -155,14 +166,14 @@ class OdealClient
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketResponse
+     * @return \Odeal\Sdk\Models\BasketResponse|null
      */
     public function createCurrentAccountBasket(
         \Odeal\Sdk\Models\BasketRequestCurrentAccount $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketResponse {
+    ): ?\Odeal\Sdk\Models\BasketResponse {
         return $this->_basket->createCurrentAccountBasket(
             $request,
             $secretKey,
@@ -178,14 +189,14 @@ class OdealClient
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketResponse
+     * @return \Odeal\Sdk\Models\BasketResponse|null
      */
     public function createFoodCardBasket(
         \Odeal\Sdk\Models\BasketRequestFoodCard $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketResponse {
+    ): ?\Odeal\Sdk\Models\BasketResponse {
         return $this->_basket->createFoodCardBasket(
             $request,
             $secretKey,
@@ -201,14 +212,14 @@ class OdealClient
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $externalDeviceKey 
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\BasketListResponse
+     * @return \Odeal\Sdk\Models\BasketListResponse|null
      */
     public function listBaskets(
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $externalDeviceKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\BasketListResponse {
+    ): ?\Odeal\Sdk\Models\BasketListResponse {
         return $this->_basket->listBaskets(
             
             $secretKey,
@@ -270,14 +281,14 @@ class OdealClient
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\CancelPaymentResponse
+     * @return \Odeal\Sdk\Models\CancelPaymentResponse|null
      */
     public function cancelPayment(
         \Odeal\Sdk\Models\CancelPaymentRequest $request,
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\CancelPaymentResponse {
+    ): ?\Odeal\Sdk\Models\CancelPaymentResponse {
         return $this->_payment->cancelPayment(
             $request,
             $secretKey,
@@ -315,13 +326,13 @@ class OdealClient
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\ConfigurationResponse
+     * @return \Odeal\Sdk\Models\ConfigurationResponse|null
      */
     public function getConfiguration(
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\ConfigurationResponse {
+    ): ?\Odeal\Sdk\Models\ConfigurationResponse {
         return $this->_configuration->getConfiguration(
             
             $secretKey,
@@ -380,6 +391,50 @@ class OdealClient
             $merchantKey,
             $externalDeviceKey,
             $basketReferenceCode,
+            $baseUrl
+        );
+    }
+
+    /**
+     * Kayıtlı terminal entegrasyon profil bilgilerinizi (profil tipi, IP listesi, terminal ID vb.) getirir.
+     *
+     * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
+     * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
+     * @param string $baseUrl API sunucusunun adresi.
+     * @return \Odeal\Sdk\Models\ProfileDetailsResponse|null
+     */
+    public function getProfileDetails(
+        ?string $secretKey = null,
+        ?string $merchantKey = null,
+        ?string $baseUrl = null
+    ): ?\Odeal\Sdk\Models\ProfileDetailsResponse {
+        return $this->_profile->getProfileDetails(
+            
+            $secretKey,
+            $merchantKey,
+            $baseUrl
+        );
+    }
+
+    /**
+     * Terminal entegrasyon profil tipini günceller. Profil tipi, hangi sepet akışının kabul edileceğini belirler.
+     *
+     * @param \Odeal\Sdk\Models\ProfileUpdateRequest $request
+     * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
+     * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
+     * @param string $baseUrl API sunucusunun adresi.
+     * @return void
+     */
+    public function updateProfile(
+        \Odeal\Sdk\Models\ProfileUpdateRequest $request,
+        ?string $secretKey = null,
+        ?string $merchantKey = null,
+        ?string $baseUrl = null
+    ): void {
+        $this->_profile->updateProfile(
+            $request,
+            $secretKey,
+            $merchantKey,
             $baseUrl
         );
     }

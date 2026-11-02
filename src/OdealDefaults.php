@@ -27,6 +27,7 @@ final class OdealDefaults
         return $statusCode >= 500;
     }
 
+    /** Retry yapılabilir durum kodu (5xx veya 429). SDK yalnız GET isteklerini yeniden dener. */
     public static function isRetryable(int $statusCode): bool
     {
         return self::isServerError($statusCode) || $statusCode === self::HTTP_TOO_MANY_REQUESTS;

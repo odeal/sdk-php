@@ -46,7 +46,6 @@ class ConfigurationResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -65,7 +64,8 @@ class ConfigurationResource extends BaseResource
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            null
         );
     }
 
@@ -95,7 +95,6 @@ class ConfigurationResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -114,7 +113,8 @@ class ConfigurationResource extends BaseResource
             $request,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            null
         );
     }
 
@@ -124,13 +124,13 @@ class ConfigurationResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return \Odeal\Sdk\Models\ConfigurationResponse
+     * @return \Odeal\Sdk\Models\ConfigurationResponse|null
      */
     public function getConfiguration(
         ?string $secretKey = null,
         ?string $merchantKey = null,
         ?string $baseUrl = null
-    ): \Odeal\Sdk\Models\ConfigurationResponse {
+    ): ?\Odeal\Sdk\Models\ConfigurationResponse {
         $path = '/configuration';
 
         $params = [
@@ -142,7 +142,6 @@ class ConfigurationResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -155,15 +154,16 @@ class ConfigurationResource extends BaseResource
             $headerParams['X-ODEAL-MERCHANT-KEY'] = $params['merchantKey'];
         }
 
-        $response = $this->send(
+        return $this->send(
             'Get',
             $path,
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\ConfigurationResponse::class
         );
-        return $this->deserialize($response, \Odeal\Sdk\Models\ConfigurationResponse::class);
     }
 
     /**
@@ -172,7 +172,7 @@ class ConfigurationResource extends BaseResource
      * @param string $secretKey Size özel olarak verilmiş gizli anahtar.
      * @param string $merchantKey Size özel olarak verilmiş iş yeri anahtarı.
      * @param string $baseUrl API sunucusunun adresi.
-     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\ConfigurationResponse döner.
+     * @return PromiseInterface Promise resolve olduğunda \Odeal\Sdk\Models\ConfigurationResponse ya da null (boş yanıt) döner.
      */
     public function getConfigurationAsync(
         ?string $secretKey = null,
@@ -190,7 +190,6 @@ class ConfigurationResource extends BaseResource
         $this->applyConfigDefaults($params, [
             'secretKey' => ['configProp' => 'secretKey'],
             'merchantKey' => ['configProp' => 'merchantKey'],
-            'baseUrl' => ['configProp' => 'baseUrl'],
         ]);
 
         $queryParams = [];
@@ -209,9 +208,9 @@ class ConfigurationResource extends BaseResource
             null,
             $queryParams,
             $headerParams,
-            $params['baseUrl']
-        )->then(function (string $response) {
-            return $this->deserialize($response, \Odeal\Sdk\Models\ConfigurationResponse::class);
-        });
+            $params['baseUrl'],
+            'object',
+            \Odeal\Sdk\Models\ConfigurationResponse::class
+        );
     }
 }

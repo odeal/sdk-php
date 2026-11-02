@@ -26,6 +26,14 @@ class BasketPrice implements JsonSerializable
      * @var float
      */
     public float $grossPrice;
+    /**
+     * @var float
+     */
+    public ?float $totalAllowance = null;
+    /**
+     * @var float
+     */
+    public ?float $paidAmount = null;
 
     /**
      * @return mixed
@@ -34,10 +42,14 @@ class BasketPrice implements JsonSerializable
     {
         $data = [
             'grossPrice' => $this->grossPrice,
+            'totalAllowance' => $this->totalAllowance,
+            'paidAmount' => $this->paidAmount,
         ];
 
         // Null değerleri temizle
         $cleanData = array_filter($data, fn($val) => $val !== null);
-        return $cleanData;
+
+        // Boş model JSON'da {} olarak yazılır; boş PHP dizisi [] olurdu (sözleşme §16).
+        return $cleanData === [] ? new \stdClass() : $cleanData;
     }
 }

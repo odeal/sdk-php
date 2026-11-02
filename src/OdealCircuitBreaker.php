@@ -21,6 +21,7 @@ class OdealCircuitBreaker
     private int $failureCount = 0;
     private int $lastFailureAtMs = 0;
     private bool $halfOpenProbeInFlight = false;
+    private int $probeStartedAtMs = 0;
     private string $lockFile;
 
     public function __construct(
@@ -58,10 +59,12 @@ class OdealCircuitBreaker
                 return true;
             }
             if ($this->state === OdealCircuitState::HalfOpen) {
-                if ($this->halfOpenProbeInFlight) {
+                // Önceki deneme sonuçsuz kaldıysa (iptal, doğrulama ya da kanca hatası) izin sıfırlama süresi dolunca yeniden verilir (RT-02).
+                if ($this->halfOpenProbeInFlight && (self::nowMs() - $this->probeStartedAtMs) < $this->resetTimeoutMs) {
                     return false;
                 }
                 $this->halfOpenProbeInFlight = true; // probe izni bu isteğe verildi
+                $this->probeStartedAtMs = self::nowMs();
                 return true;
             }
             return false; // Open
